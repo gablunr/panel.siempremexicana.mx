@@ -1,4 +1,4 @@
-import { CircleCheckIcon, CircleIcon } from "lucide-react"
+import { ChevronRightIcon, CircleCheckIcon, CircleIcon } from "lucide-react"
 
 import {
   Card,
@@ -17,7 +17,15 @@ function heading(missing: number, published: boolean) {
   return published ? "Todo listo" : "Listo para publicar"
 }
 
-export function Runway({ items, published }: { items: Item[]; published: boolean }) {
+export function Runway({
+  items,
+  published,
+  onPick,
+}: {
+  items: Item[]
+  published: boolean
+  onPick?: (key: string) => void
+}) {
   const done = items.filter((item) => item.done).length
 
   return (
@@ -29,17 +37,31 @@ export function Runway({ items, published }: { items: Item[]; published: boolean
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="flex flex-col gap-2 text-sm">
+        <ul className="flex flex-col gap-1 text-sm">
           {items.map((item) => (
-            <li key={item.key} className="flex items-center gap-2">
-              {item.done ? (
-                <CircleCheckIcon className="size-4 shrink-0 text-emerald-600" />
+            <li key={item.key}>
+              {item.done || !onPick ? (
+                <span className="flex min-h-7 items-center gap-2">
+                  {item.done ? (
+                    <CircleCheckIcon className="size-4 shrink-0 text-emerald-600" />
+                  ) : (
+                    <CircleIcon className="size-4 shrink-0 text-muted-foreground/60" />
+                  )}
+                  <span className={cn(item.done && "text-muted-foreground")}>
+                    {item.label}
+                  </span>
+                </span>
               ) : (
-                <CircleIcon className="size-4 shrink-0 text-muted-foreground/60" />
+                <button
+                  type="button"
+                  onClick={() => onPick(item.key)}
+                  className="-mx-1.5 flex min-h-7 w-[calc(100%+0.75rem)] items-center gap-2 rounded-md px-1.5 text-left outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 max-lg:min-h-10 pointer-coarse:min-h-10"
+                >
+                  <CircleIcon className="size-4 shrink-0 text-muted-foreground/60" />
+                  <span className="flex-1">{item.label}</span>
+                  <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" />
+                </button>
               )}
-              <span className={cn(item.done && "text-muted-foreground")}>
-                {item.label}
-              </span>
             </li>
           ))}
         </ul>

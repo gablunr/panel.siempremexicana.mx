@@ -157,7 +157,10 @@ export async function savePost(
   }
 
   revalidatePath("/dashboard", "layout")
-  if (!post.id) redirect(`/dashboard/posts/${data.id}`)
+  if (!post.id) {
+    const view = formData.get("view") === "details" ? "?view=details" : ""
+    redirect(`/dashboard/posts/${data.id}${view}`)
+  }
   return { errors: {}, savedAt: Date.now(), status: post.status }
 }
 

@@ -8,10 +8,17 @@ export const metadata: Metadata = { title: "Editar artículo" }
 
 export default async function Page({
   params,
+  searchParams,
 }: PageProps<"/dashboard/posts/[id]">) {
-  const { id } = await params
+  const [{ id }, { view }] = await Promise.all([params, searchParams])
   const post = await getPost(id)
   if (!post) notFound()
 
-  return <Scribe key={post.id} post={post} />
+  return (
+    <Scribe
+      key={post.id}
+      post={post}
+      view={view === "details" ? "details" : "text"}
+    />
+  )
 }

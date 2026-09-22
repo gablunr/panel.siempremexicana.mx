@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ImagePlusIcon, Trash2Icon } from "lucide-react"
+import { ImagePlusIcon, ImageUpIcon, Loader2Icon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -55,6 +55,7 @@ export function Easel({
         <FieldGroup>
           <Field data-invalid={Boolean(coverError)}>
             <button
+              id="cover"
               type="button"
               disabled={uploading}
               onClick={() => fileInput.current?.click()}
@@ -79,7 +80,13 @@ export function Easel({
               {cover ? (
                 <>
                   <img src={cover} alt={alt} className="size-full object-cover" />
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/50 font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <span
+                    className={cn(
+                      "absolute inset-0 flex items-center justify-center gap-2 bg-black/50 font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+                      uploading && "opacity-100"
+                    )}
+                  >
+                    {uploading && <Loader2Icon className="size-4 animate-spin" />}
                     {uploading ? "Subiendo..." : "Cambiar foto"}
                   </span>
                 </>
@@ -97,12 +104,35 @@ export function Easel({
               type="button"
               variant="ghost"
               size="sm"
-              className="self-start text-muted-foreground"
+              className="self-start text-muted-foreground pointer-coarse:hidden"
               onClick={onRemove}
             >
               <Trash2Icon data-icon="inline-start" />
               Quitar
             </Button>
+          )}
+          {cover && (
+            <div className="hidden gap-2 pointer-coarse:flex">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 flex-1"
+                disabled={uploading}
+                onClick={() => fileInput.current?.click()}
+              >
+                <ImageUpIcon data-icon="inline-start" />
+                Cambiar foto
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 flex-1 text-destructive hover:text-destructive"
+                onClick={onRemove}
+              >
+                <Trash2Icon data-icon="inline-start" />
+                Quitar
+              </Button>
+            </div>
           )}
           <Field data-invalid={Boolean(altError)}>
             <FieldLabel htmlFor="coverAlt">Descripción</FieldLabel>
@@ -112,7 +142,9 @@ export function Easel({
               value={alt}
               onChange={(event) => onAltChange(event.target.value)}
               placeholder="Qué se ve en la foto"
+              enterKeyHint="done"
               aria-invalid={Boolean(altError)}
+              className="max-lg:h-10"
             />
             <FieldDescription>
               La usan Google y quien navega con lector de pantalla.

@@ -20,7 +20,11 @@ export default async function Page() {
             Crea y edita los artículos del blog.
           </p>
         </div>
-        <Button nativeButton={false} render={<Link href="/dashboard/posts/new" />}>
+        <Button
+          className="hidden md:inline-flex"
+          nativeButton={false}
+          render={<Link href="/dashboard/posts/new" />}
+        >
           <PlusIcon data-icon="inline-start" />
           Nuevo artículo
         </Button>

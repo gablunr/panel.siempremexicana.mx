@@ -33,6 +33,9 @@ export function LoginForm({
                   name="email"
                   type="email"
                   autoComplete="email"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  enterKeyHint="next"
                   required
                 />
               </Field>
@@ -43,6 +46,7 @@ export function LoginForm({
                   name="password"
                   type="password"
                   autoComplete="current-password"
+                  enterKeyHint="go"
                   aria-invalid={Boolean(error)}
                   required
                 />

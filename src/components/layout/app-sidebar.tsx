@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { Crest } from "@/components/layout/Crest"
 import { NavMain } from "@/components/layout/nav-main"
@@ -15,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { mainNav, secondaryNav } from "@/data/Compass"
 import type { Admin } from "@/data/Passport"
@@ -23,6 +25,13 @@ export function AppSidebar({
   admin,
   ...props
 }: React.ComponentProps<typeof Sidebar> & { admin: Admin }) {
+  const pathname = usePathname()
+  const { setOpenMobile } = useSidebar()
+
+  React.useEffect(() => {
+    setOpenMobile(false)
+  }, [pathname, setOpenMobile])
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

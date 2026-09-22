@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant typing (&:has(:is([contenteditable="true"], textarea, input):focus, [data-ribbon] [aria-expanded="true"]));
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -131,6 +132,7 @@
   }
   html {
     @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -145,13 +147,13 @@
     @apply mt-0;
   }
   .prose-editor h2 {
-    @apply mt-8 text-2xl font-semibold tracking-tight;
+    @apply mt-8 text-2xl font-semibold tracking-tight max-sm:text-xl;
   }
   .prose-editor h3 {
-    @apply mt-6 text-xl font-semibold;
+    @apply mt-6 text-xl font-semibold max-sm:text-lg;
   }
   .prose-editor h4 {
-    @apply mt-5 text-lg font-semibold;
+    @apply mt-5 text-lg font-semibold max-sm:text-base;
   }
   .prose-editor ul {
     @apply list-disc pl-6;
@@ -173,10 +175,10 @@
     @apply flex items-start gap-2;
   }
   .prose-editor ul[data-type="taskList"] li > label {
-    @apply mt-1.5 flex shrink-0 select-none;
+    @apply mt-1.5 flex shrink-0 select-none pointer-coarse:mt-1;
   }
   .prose-editor ul[data-type="taskList"] li > label input {
-    @apply size-4 cursor-pointer accent-brand;
+    @apply size-4 cursor-pointer accent-brand pointer-coarse:size-5;
   }
   .prose-editor ul[data-type="taskList"] li > div {
     @apply min-w-0 flex-1;
@@ -218,7 +220,7 @@
     @apply overflow-x-auto;
   }
   .prose-editor table {
-    @apply w-full table-fixed border-collapse text-sm;
+    @apply w-full table-fixed border-collapse text-sm max-sm:table-auto;
   }
   .prose-editor th,
   .prose-editor td {
@@ -229,12 +231,18 @@
   }
   .prose-editor th > p,
   .prose-editor td > p {
-    @apply m-0;
+    @apply m-0 max-sm:min-w-28;
   }
   .prose-editor .selectedCell::after {
     @apply pointer-events-none absolute inset-0 bg-brand/10 content-[''];
   }
   .prose-editor .is-empty::before {
     @apply pointer-events-none float-left h-0 text-muted-foreground/70 content-[attr(data-placeholder)];
+  }
+}
+
+@media (width < 48rem) {
+  body:has([data-bottom-bar]) {
+    --bottom-bar: calc(5rem + env(safe-area-inset-bottom));
   }
 }

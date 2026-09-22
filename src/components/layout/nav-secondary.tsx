@@ -25,6 +25,7 @@ export function NavSecondary({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 render={<a href={item.url} target="_blank" rel="noreferrer" />}
+                className="pointer-coarse:h-10"
               >
                 <item.icon />
                 <span>{item.title}</span>

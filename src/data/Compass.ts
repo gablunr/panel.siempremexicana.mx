@@ -10,6 +10,8 @@ export const siteUrl = "https://siempremexicana.mx"
 
 export const postUrl = (slug: string) => `${siteUrl}/blog/${slug}`
 
+export const newPostUrl = "/dashboard/posts/new"
+
 export type NavItem = {
   title: string
   url: string
@@ -21,6 +23,12 @@ export const mainNav: NavItem[] = [
   { title: "Cotizaciones", url: "/dashboard/quotes", icon: InboxIcon },
   { title: "Artículos", url: "/dashboard/posts", icon: FileTextIcon },
 ]
+
+export const isCurrent = (pathname: string, url: string) =>
+  url === "/dashboard" ? pathname === url : pathname.startsWith(url)
+
+export const hidesDock = (pathname: string) =>
+  /^\/dashboard\/posts\/[^/]+$/.test(pathname)
 
 export const secondaryNav: NavItem[] = [
   { title: "Ver sitio web", url: siteUrl, icon: ExternalLinkIcon },

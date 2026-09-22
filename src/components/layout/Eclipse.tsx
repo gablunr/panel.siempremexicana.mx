@@ -12,7 +12,6 @@ export function Eclipse() {
     <Button
       variant="ghost"
       size="icon"
-      className="size-8"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
       <SunIcon className="dark:hidden" />

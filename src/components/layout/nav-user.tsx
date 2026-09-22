@@ -2,6 +2,7 @@
 
 import { EllipsisVerticalIcon, LogOutIcon } from "lucide-react"
 
+import { initialsOf } from "@/components/layout/Monogram"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -20,15 +21,7 @@ import {
 } from "@/components/ui/sidebar"
 import { signOut } from "@/actions/Passport"
 import type { Admin } from "@/data/Passport"
-
-const initialsOf = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
+import { confirmLeave } from "@/lib/Warden"
 
 export function NavUser({ user }: { user: Admin }) {
   const { isMobile } = useSidebar()
@@ -56,7 +49,7 @@ export function NavUser({ user }: { user: Admin }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="min-w-56"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? "top" : "right"}
             align="end"
             sideOffset={4}
           >
@@ -76,7 +69,11 @@ export function NavUser({ user }: { user: Admin }) {
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut()}>
+            <DropdownMenuItem
+              onClick={() => {
+                if (confirmLeave()) signOut()
+              }}
+            >
               <LogOutIcon />
               Cerrar sesión
             </DropdownMenuItem>

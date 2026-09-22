@@ -18,7 +18,7 @@ import type { Stats } from "@/data/Pulse"
 
 function monthlyTrend(thisMonth: number, lastMonth: number) {
   if (!lastMonth) {
-    return { badge: null, icon: MinusIcon, headline: "Sin datos del mes pasado para comparar" }
+    return { badge: null, icon: MinusIcon, headline: "Todavía no hay con qué comparar" }
   }
   const change = Math.round(((thisMonth - lastMonth) / lastMonth) * 100)
   if (change === 0) {
@@ -72,16 +72,21 @@ export function SectionCards({ stats }: { stats: Stats }) {
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+    <div className="grid grid-cols-2 gap-3 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:gap-4 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       {cards.map(({ label, value, badge, icon: Icon, headline, detail }) => (
-        <Card key={label} className="@container/card">
+        <Card
+          key={label}
+          className="@container/card [--card-spacing:--spacing(3)] @xl/main:[--card-spacing:--spacing(4)]"
+        >
           <CardHeader>
-            <CardDescription>{label}</CardDescription>
+            <CardDescription className="col-span-full text-xs @xl/main:col-span-1 @xl/main:text-sm">
+              {label}
+            </CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               {value}
             </CardTitle>
             {badge && Icon && (
-              <CardAction>
+              <CardAction className="row-span-1 row-start-2 self-center @xl/main:row-span-2 @xl/main:row-start-1 @xl/main:self-start">
                 <Badge variant="outline">
                   <Icon />
                   {badge}
@@ -89,9 +94,9 @@ export function SectionCards({ stats }: { stats: Stats }) {
               </CardAction>
             )}
           </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <div className="line-clamp-1 flex gap-2 font-medium">{headline}</div>
-            <div className="text-muted-foreground">{detail}</div>
+          <CardFooter className="grow flex-col items-start gap-1 text-xs @xl/main:grow-0 @xl/main:gap-1.5 @xl/main:text-sm">
+            <div className="line-clamp-2 font-medium">{headline}</div>
+            <div className="line-clamp-2 text-muted-foreground">{detail}</div>
           </CardFooter>
         </Card>
       ))}

@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
-import { useIsMobile } from "@/hooks/use-mobile"
 import {
   Card,
   CardAction,
@@ -19,13 +18,6 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
@@ -39,9 +31,9 @@ const chartConfig = {
 } satisfies ChartConfig
 
 const ranges = [
-  { value: "90d", label: "Últimos 3 meses", days: 90 },
-  { value: "30d", label: "Últimos 30 días", days: 30 },
-  { value: "7d", label: "Últimos 7 días", days: 7 },
+  { value: "90d", label: "Últimos 3 meses", short: "3 meses", days: 90 },
+  { value: "30d", label: "Últimos 30 días", short: "30 días", days: 30 },
+  { value: "7d", label: "Últimos 7 días", short: "7 días", days: 7 },
 ]
 
 const formatDay = (value: string) =>
@@ -51,13 +43,40 @@ const formatDay = (value: string) =>
     timeZone: "UTC",
   })
 
-export function ChartAreaInteractive({ data }: { data: QuoteSeries }) {
-  const isMobile = useIsMobile()
-  const [timeRange, setTimeRange] = React.useState("90d")
+function Periods({
+  value,
+  onChange,
+  size,
+  className,
+}: {
+  value: string
+  onChange: (value: string) => void
+  size?: "default" | "lg"
+  className?: string
+}) {
+  return (
+    <ToggleGroup
+      multiple={false}
+      value={[value]}
+      onValueChange={(next) => {
+        if (next[0]) onChange(next[0])
+      }}
+      variant="outline"
+      size={size}
+      className={className}
+    >
+      {ranges.map((item) => (
+        <ToggleGroupItem key={item.value} value={item.value} aria-label={item.label}>
+          <span className="@[767px]/card:hidden">{item.short}</span>
+          <span className="hidden @[767px]/card:inline">{item.label}</span>
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  )
+}
 
-  React.useEffect(() => {
-    if (isMobile) setTimeRange("7d")
-  }, [isMobile])
+export function ChartAreaInteractive({ data }: { data: QuoteSeries }) {
+  const [timeRange, setTimeRange] = React.useState("90d")
 
   const range = ranges.find((item) => item.value === timeRange) ?? ranges[0]
   const visible = data.slice(-range.days)
@@ -72,45 +91,26 @@ export function ChartAreaInteractive({ data }: { data: QuoteSeries }) {
           {range.label.toLowerCase()}
         </CardDescription>
         <CardAction>
-          <ToggleGroup
-            multiple={false}
-            value={[timeRange]}
-            onValueChange={(value) => setTimeRange(value[0] ?? "90d")}
-            variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:px-4! @[767px]/card:flex"
-          >
-            {ranges.map((item) => (
-              <ToggleGroupItem key={item.value} value={item.value}>
-                {item.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-          <Select
+          <Periods
             value={timeRange}
-            onValueChange={(value) => {
-              if (value !== null) setTimeRange(value)
-            }}
-            items={ranges}
-          >
-            <SelectTrigger
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
-              size="sm"
-              aria-label="Elige un periodo"
-            >
-              <SelectValue placeholder="Últimos 3 meses" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {ranges.map((item) => (
-                <SelectItem key={item.value} value={item.value} className="rounded-lg">
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            onChange={setTimeRange}
+            className="hidden @xl/card:flex @[767px]/card:*:data-[slot=toggle-group-item]:px-4!"
+          />
         </CardAction>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+      <div className="px-(--card-spacing) @xl/card:hidden">
+        <Periods
+          value={timeRange}
+          onChange={setTimeRange}
+          size="lg"
+          className="w-full *:data-[slot=toggle-group-item]:flex-1"
+        />
+      </div>
+      <CardContent className="px-2 pt-0 @xl/card:px-6 @xl/card:pt-6">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-50 w-full @xl/card:h-[250px]"
+        >
           <AreaChart data={visible}>
             <defs>
               <linearGradient id="fillQuotes" x1="0" y1="0" x2="0" y2="1">
@@ -129,6 +129,7 @@ export function ChartAreaInteractive({ data }: { data: QuoteSeries }) {
             />
             <ChartTooltip
               cursor={false}
+              position={{ y: 0 }}
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => formatDay(String(value))}

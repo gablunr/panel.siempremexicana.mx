@@ -69,6 +69,7 @@ import {
   quoteStatuses,
   type QuoteStatus,
 } from "@/data/Lexicon"
+import { formatCount } from "@/lib/Abacus"
 import { formatDate } from "@/lib/Almanac"
 
 const features = tableFeatures({
@@ -198,7 +199,9 @@ const columnsFor = (dossier: DossierHandle) =>
 
 function Count({ value }: { value: number | undefined }) {
   return value ? (
-    <span className="ml-auto text-muted-foreground tabular-nums">{value}</span>
+    <span className="ml-auto text-muted-foreground tabular-nums">
+      {formatCount(value)}
+    </span>
   ) : null
 }
 
@@ -419,12 +422,12 @@ export function DataTable({
             </SelectGroup>
           </SelectContent>
         </Select>
-        <TabsList className="hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:px-1 @4xl/main:flex">
+        <TabsList className="hidden **:data-[slot=badge]:h-5 **:data-[slot=badge]:min-w-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:px-1.5 **:data-[slot=badge]:tabular-nums @4xl/main:flex">
           {filterItems.map((item) => (
             <TabsTrigger key={item.value} value={item.value}>
               {item.label}
               {counts[item.value] ? (
-                <Badge variant="secondary">{counts[item.value]}</Badge>
+                <Badge variant="secondary">{formatCount(counts[item.value])}</Badge>
               ) : null}
             </TabsTrigger>
           ))}
@@ -468,7 +471,8 @@ export function DataTable({
         {list}
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 @3xl/main:px-4">
           <p aria-live="polite" className="text-sm text-muted-foreground">
-            {data.length} {data.length === 1 ? "cotización" : "cotizaciones"}
+            {formatCount(data.length)}{" "}
+            {data.length === 1 ? "cotización" : "cotizaciones"}
           </p>
           {pageCount > 1 ? (
             <div className="flex items-center gap-4 @3xl/main:gap-8">

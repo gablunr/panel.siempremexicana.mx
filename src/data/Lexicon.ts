@@ -13,6 +13,30 @@ export const quoteStatuses = Object.keys(quoteStatusLabels) as QuoteStatus[]
 export const isQuoteStatus = (value: string): value is QuoteStatus =>
   Object.hasOwn(quoteStatusLabels, value)
 
+export const budgetEstimates: Record<string, number> = {
+  "Menos de $200,000 MXN": 100_000,
+  "$200,000 - $500,000 MXN": 350_000,
+  "$500,000 - $1,000,000 MXN": 750_000,
+  "$1,000,000 - $2,000,000 MXN": 1_500_000,
+  "$2,000,000 - $4,000,000 MXN": 3_000_000,
+  "Más de $4,000,000 MXN": 4_000_000,
+}
+
+export const campaignLabels: Record<string, string> = {
+  google: "Google Ads",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  newsletter: "Newsletter",
+}
+
+export const referrerLabels: [RegExp, string][] = [
+  [/(^|\.)google\./, "Búsqueda en Google"],
+  [/(^|\.)instagram\.com$/, "Instagram"],
+  [/(^|\.)facebook\.com$/, "Facebook"],
+]
+
+export const directLabel = "Directo"
+
 export const postStatusLabels = {
   borrador: "Borrador",
   publicado: "Publicado",

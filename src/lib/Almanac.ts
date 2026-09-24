@@ -20,7 +20,17 @@ const dateTimeFormat = new Intl.DateTimeFormat("es-MX", {
   timeStyle: "short",
 })
 
+const monthFormat = new Intl.DateTimeFormat("es-MX", {
+  timeZone: "UTC",
+  month: "short",
+})
+
 export const dayKey = (value: string | Date) => dayFormat.format(new Date(value))
+
+export const monthKey = (value: string | Date) => dayKey(value).slice(0, 7)
+
+export const formatMonth = (key: string) =>
+  monthFormat.format(new Date(`${key}-15T12:00:00Z`))
 
 export const formatDate = (value: string | Date) =>
   dateFormat.format(new Date(value))
@@ -36,6 +46,13 @@ export function lastDays(count: number, now = new Date()) {
   const midday = middayOf(dayKey(now)).getTime()
   return Array.from({ length: count }, (_, index) =>
     dayKey(new Date(midday - (count - 1 - index) * 86_400_000))
+  )
+}
+
+export function lastMonths(count: number, now = new Date()) {
+  const [year, month] = dayKey(now).split("-").map(Number)
+  return Array.from({ length: count }, (_, index) =>
+    new Date(Date.UTC(year, month - count + index, 1)).toISOString().slice(0, 7)
   )
 }
 

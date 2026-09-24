@@ -1,7 +1,7 @@
 import "server-only"
 
 import type { QuoteStatus } from "@/data/Lexicon"
-import { createClient, unwrap } from "@/lib/Supabase"
+import { createClient, readAll, unwrap } from "@/lib/Supabase"
 
 export type Quote = {
   id: string
@@ -22,11 +22,15 @@ const columns =
 
 export async function getQuotes(limit?: number) {
   const supabase = await createClient()
-  const query = supabase
-    .from("cotizaciones")
-    .select(columns)
-    .order("creada_en", { ascending: false })
+  const query = () =>
+    supabase
+      .from("cotizaciones")
+      .select(columns)
+      .order("creada_en", { ascending: false })
+      .order("id")
 
-  const { data, error } = await (limit ? query.limit(limit) : query)
+  if (!limit) return readAll<Quote>((from, to) => query().range(from, to))
+
+  const { data, error } = await query().limit(limit)
   return unwrap(data ?? [], error) as Quote[]
 }

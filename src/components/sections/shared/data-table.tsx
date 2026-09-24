@@ -69,6 +69,7 @@ import {
   quoteStatuses,
   type QuoteStatus,
 } from "@/data/Lexicon"
+import { useBrim } from "@/hooks/Brim"
 import { formatCount } from "@/lib/Abacus"
 import { formatDate } from "@/lib/Almanac"
 
@@ -214,13 +215,12 @@ export function DataTable({
 }) {
   const [filter, setFilter] = React.useState("all")
   const [search, setSearch] = React.useState("")
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
+  const [page, setPage] = React.useState(0)
   const dossier = useDossier()
   const listRef = React.useRef<HTMLDivElement>(null)
+  const tableRef = React.useRef<HTMLDivElement>(null)
   const searchRef = React.useRef<HTMLInputElement>(null)
+  const pageSize = useBrim(tableRef, 10, !compact)
   const columns = React.useMemo(() => columnsFor(dossier), [dossier])
 
   const counts = React.useMemo(() => {
@@ -243,18 +243,20 @@ export function DataTable({
     )
   }, [quotes, filter, search])
 
-  const lastPage = Math.max(Math.ceil(data.length / pagination.pageSize) - 1, 0)
-  const pageIndex = Math.min(pagination.pageIndex, lastPage)
+  const lastPage = Math.max(Math.ceil(data.length / pageSize) - 1, 0)
+  const pageIndex = Math.min(page, lastPage)
   const pageCount = lastPage + 1
   const filtered = filter !== "all" || search.trim() !== ""
+  const pagination = { pageIndex, pageSize }
 
   const table = useTable({
     features,
     data,
     columns,
-    state: { pagination: { ...pagination, pageIndex } },
+    state: { pagination },
     getRowId: (row) => row.id,
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) =>
+      setPage((typeof updater === "function" ? updater(pagination) : updater).pageIndex),
     autoResetPageIndex: false,
   })
 
@@ -263,11 +265,11 @@ export function DataTable({
   const refine = (changes: { filter?: string; search?: string }) => {
     if (changes.filter !== undefined) setFilter(changes.filter)
     if (changes.search !== undefined) setSearch(changes.search)
-    setPagination((current) => ({ ...current, pageIndex: 0 }))
+    setPage(0)
   }
 
   const goTo = (index: number) => {
-    setPagination((current) => ({ ...current, pageIndex: index }))
+    setPage(index)
     const list = listRef.current
     if (list && list.getBoundingClientRect().top < 0) {
       list.scrollIntoView({ block: "start" })
@@ -315,7 +317,10 @@ export function DataTable({
           {empty}
         </div>
       )}
-      <div className="hidden overflow-hidden rounded-lg border @3xl/main:block">
+      <div
+        ref={tableRef}
+        className="hidden overflow-hidden rounded-lg border @3xl/main:block"
+      >
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -335,7 +340,7 @@ export function DataTable({
           <TableBody>
             {rows.length ? (
               rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} data-row>
                   {row.getAllCells().map((cell) => (
                     <TableCell
                       key={cell.id}
